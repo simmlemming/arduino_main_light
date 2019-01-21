@@ -9,7 +9,7 @@ class State {
     int led_level = 6;
     int current_br = 0;
     int target_br = 40;
-    int mode = MODE_MANUAL;
+    int mode = MODE_AUTO;
 
     void up() {
       if (mode == MODE_MANUAL) {

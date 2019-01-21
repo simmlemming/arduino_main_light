@@ -4,6 +4,7 @@
 #include <Adafruit_SSD1306.h>
 #include <Button.h>
 #include "State.cpp"
+#include "Filter.cpp"
 
 #define BTN_UP 12
 #define BTN_DOWN 11
@@ -15,6 +16,7 @@
 Adafruit_SSD1306 display(OLED_RESET);
 
 State state = State();
+Filter br_filter = Filter();
 
 Button btn_up = Button(BTN_UP, on_up_click);
 Button btn_down = Button(BTN_DOWN, on_down_click);
@@ -47,7 +49,8 @@ void loop() {
 }
 
 void update_state() {
-  state.current_br = analogRead(PHOTO_RES) / 10;  
+  int value = analogRead(PHOTO_RES) / 10;
+  state.current_br = br_filter.apply(value);
 }
 
 void update_led(int value) {
