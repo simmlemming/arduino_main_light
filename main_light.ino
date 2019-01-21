@@ -3,59 +3,51 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <Button.h>
+#include "State.cpp"
 
 #define BTN_UP 12
-#define BTN_ON 11
-#define BTN_DOWN 10
+#define BTN_DOWN 11
+#define BTN_POWER 10
 #define LED 3
 #define PHOTO_RES A0
-
-#define BR_MIN 0
-#define BR_MAX 9
 
 #define OLED_RESET 4
 Adafruit_SSD1306 display(OLED_RESET);
 
-int br = 5;
-int photo_res = 0;
+State state = State();
 
 Button btn_up = Button(BTN_UP, on_up_click);
 Button btn_down = Button(BTN_DOWN, on_down_click);
+Button btn_power = Button(BTN_POWER, on_power_click);
 
 void setup() {
   Serial.begin(9600);
+  
   pinMode(LED, OUTPUT);
   pinMode(PHOTO_RES, INPUT_PULLUP);
 
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   display.clearDisplay();
-
   display.setTextColor(WHITE);
 }
 
 void loop() {
-  photo_res = analogRead(PHOTO_RES) / 10;
-
+  update_state();
+  
   btn_up.loop();
   btn_down.loop();
+  btn_power.loop();
 
   display.clearDisplay();
-
-  display.setCursor(48, 16);
-  display.setTextSize(6);
-  display.print(br);
-
-  display.setCursor(0, 0);
-  display.setTextSize(1);
-  display.print(photo_res);
+  state.display(display);
   display.display();
 
-  int pwm = map(br, 0, 9, 0, 255);
-  Serial.print(br);
-  Serial.print(" -> ");
-  Serial.println(pwm);
-
+  int pwm = map(state.led_level, 0, 9, 0, 255);
   update_led(pwm);
+}
+
+void update_state() {
+  state.current_br = analogRead(PHOTO_RES) / 10;  
 }
 
 void update_led(int value) {
@@ -63,11 +55,13 @@ void update_led(int value) {
 }
 
 void on_up_click() {
-  br++;
-  br = constrain(br, BR_MIN, BR_MAX);
+  state.up();
 }
 
 void on_down_click() {
-  br--;
-  br = constrain(br, BR_MIN, BR_MAX);
+  state.down();
+}
+
+void on_power_click() {
+  state.toggle_manual_auto();
 }
