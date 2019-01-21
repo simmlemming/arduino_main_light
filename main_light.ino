@@ -5,8 +5,8 @@
 #include <Button.h>
 
 #define BTN_UP 12
-#define BTN_ON 10
-#define BTN_DOWN 11
+#define BTN_ON 11
+#define BTN_DOWN 10
 #define LED 3
 #define PHOTO_RES A0
 
@@ -25,7 +25,7 @@ Button btn_down = Button(BTN_DOWN, on_down_click);
 void setup() {
   Serial.begin(9600);
   pinMode(LED, OUTPUT);
-  pinMode(PHOTO_RES, INPUT);
+  pinMode(PHOTO_RES, INPUT_PULLUP);
 
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   display.clearDisplay();
@@ -50,10 +50,10 @@ void loop() {
   display.print(photo_res);
   display.display();
 
-  int pwm = map(br, BR_MIN, BR_MAX, 0, 255);
-//  Serial.print(br);
-//  Serial.print(" -> ");
-//  Serial.println(pwm);
+  int pwm = map(br, 0, 9, 0, 255);
+  Serial.print(br);
+  Serial.print(" -> ");
+  Serial.println(pwm);
 
   update_led(pwm);
 }
