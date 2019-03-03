@@ -18,8 +18,10 @@ Adafruit_SSD1306 display(OLED_RESET);
 State state = State();
 Button btn_power = Button(BTN_POWER, on_power_click);
 
+volatile bool allow_interrupts = true;
+
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   pinMode(ENCODER_A, INPUT_PULLUP);
   pinMode(ENCODER_B, INPUT_PULLUP);
@@ -31,6 +33,8 @@ void setup() {
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   display.clearDisplay();
   display.setTextColor(WHITE);
+
+  allow_interrupts = true;
 }
 
 void loop() {
@@ -42,9 +46,17 @@ void loop() {
 
   int pwm = map(state.led_level, LED_LEVEL_MIN, LED_LEVEL_MAX, 0, 1023);
   update_led(pwm);
+
+  allow_interrupts = true;
 }
 
 void turn() {
+  if (!allow_interrupts) {
+    return;
+  }
+
+  allow_interrupts = false;
+
   int a = digitalRead(ENCODER_A);
   int b = digitalRead(ENCODER_B);
 
@@ -54,10 +66,6 @@ void turn() {
     state.up();
   }
 }
-
-long br_start_ms = 0;
-const long BR_DELAY_MS = 1500;
-const int BR_DELTA = 5;
 
 void update_led(int value) {
   analogWrite(LED, value);
