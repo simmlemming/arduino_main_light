@@ -1,29 +1,23 @@
 #include <Adafruit_SSD1306.h>
 #include "Const.h"
 
-const int MODE_MANUAL = 1;
-const int MODE_AUTO = 2;
+const int MODE_ON = 1;
+const int MODE_OFF = 2;
 
 class State {
   public:
-    int led_level = 6;
-    int current_br = 0;
-    int target_br = 40;
-    int mode = MODE_AUTO;
+    volatile int led_level = 5;
+    int mode = MODE_ON;
 
     void up() {
-      if (mode == MODE_MANUAL) {
+      if (mode == MODE_ON) {
         led_level_up();
-      } else if (mode == MODE_AUTO) {
-        br_up();
       }
     }
 
     void down() {
-      if (mode == MODE_MANUAL) {
+      if (mode == MODE_ON) {
         led_level_down();
-      } else if (mode == MODE_AUTO) {
-        br_down();
       }
     }
 
@@ -37,61 +31,59 @@ class State {
       led_level = constrain(led_level, LED_LEVEL_MIN, LED_LEVEL_MAX);
     }
 
-    void br_up() {
-      target_br += BR_STEP;
-      target_br = constrain(target_br, BR_MIN, BR_MAX);
-    }
-
-    void br_down() {
-      target_br -= BR_STEP;
-      target_br = constrain(target_br, BR_MIN, BR_MAX);
-    }
-
     void display(Adafruit_SSD1306 display) {
-      if (mode == MODE_MANUAL) {
-        _display_manual(display);
-      } else if (mode == MODE_AUTO) {
-        _display_auto(display);
+      if (mode == MODE_ON) {
+        _display_on(display);
+      } else if (mode == MODE_OFF) {
+        _display_off(display);
       } else {
         _display_error(display);
       }
     }
 
-    void toggle_manual_auto() {
-      if (mode == MODE_MANUAL) {
-        mode = MODE_AUTO;
-        target_br = current_br;
-      } else if (mode == MODE_AUTO) {
-        mode = MODE_MANUAL;
+    void toggle_on_off() {
+      if (mode == MODE_ON) {
+        _last_on_level = led_level;
+        led_level = 0;
+        mode = MODE_OFF;
+      } else if (mode == MODE_OFF) {
+        led_level = _last_on_level;
+        mode = MODE_ON;
       }
     }
 
   private:
-    void _display_manual(Adafruit_SSD1306 display) {
-      float pct = (float) led_level / LED_LEVEL_MAX;
-      display.drawRect(0, 0, 128, 16, WHITE);
-      display.fillRect(0, 0, (int)(128 * pct), 16, WHITE);
+    int _last_on_level = 0;
 
-      display.setCursor(48, 22);
+    void _display_on(Adafruit_SSD1306 display) {
+      float pct = (float) led_level / LED_LEVEL_MAX;
+      _draw_bar(display, pct);
+
+      display.setCursor(32, 22);
       display.setTextSize(6);
+      
+      if (led_level < 10) {
+        display.print(0);
+      }
       display.print(led_level);
     }
 
-    void _display_auto(Adafruit_SSD1306 display) {
-      _display_manual(display);
-
-      display.setTextSize(3);
-
-      display.setCursor(0, 32);
-      display.print(current_br);
-
-      display.setCursor(90, 32);
-      display.print(target_br);
+    void _display_off(Adafruit_SSD1306 display) {
+      _draw_bar(display, 0);
+      
+      display.setCursor(48, 22);
+      display.setTextSize(6);
+      display.print("-");
     }
 
     void _display_error(Adafruit_SSD1306 display) {
-      display.setCursor(48, 16);
+      display.setCursor(16, 16);
       display.setTextSize(6);
       display.print("ERR");
+    }
+
+    void _draw_bar(Adafruit_SSD1306 display, float pct) {
+      display.drawRect(0, 0, 128, 16, WHITE);
+      display.fillRect(0, 0, (int)(128 * pct), 16, WHITE);
     }
 };
