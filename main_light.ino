@@ -15,7 +15,7 @@
 #define OLED_RESET LED_BUILTIN
 Adafruit_SSD1306 display(OLED_RESET);
 
-State state = State();
+State state = State(LED);
 Button btn_power = Button(BTN_POWER, on_power_click);
 
 volatile bool allow_interrupts = true;
@@ -35,7 +35,7 @@ void setup() {
   display.clearDisplay();
   display.setTextColor(WHITE);
 
-  state.set_led_level(LED_LEVEL_MAX);
+  state.set_led_level(LED_LEVEL_MAX / 3);
 
   allow_interrupts = true;
 }
@@ -43,13 +43,10 @@ void setup() {
 void loop() {
   btn_power.loop();
 
-  if (state.changed) {
+  if (state.popChanged()) {
     display.clearDisplay();
     state.display(display);
     display.display();
-
-    int pwm = map(state.get_led_level(), LED_LEVEL_MIN, LED_LEVEL_MAX, 0, 1023);
-    update_led(pwm);
   }
 
   allow_interrupts = true;

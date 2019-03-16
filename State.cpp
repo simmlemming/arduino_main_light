@@ -7,7 +7,10 @@ const int MODE_OFF = 2;
 class State {
   public:
     int mode = MODE_ON;
-    bool changed = false;
+
+    State(int led_pin) {
+      _led_pin = led_pin;
+    }
 
     void up() {
       if (mode == MODE_ON) {
@@ -31,13 +34,23 @@ class State {
 
     void set_led_level(int level) {
       _led_level = constrain(level, LED_LEVEL_MIN, LED_LEVEL_MAX);
-      changed = true;
+
+      int pwm = map(_led_level, LED_LEVEL_MIN, LED_LEVEL_MAX, 0, 1023);
+      analogWrite(_led_pin, pwm);
+
+      _changed = true;
     }
 
     int get_led_level() {
       return _led_level;
     }
-    
+
+    bool popChanged() {
+      bool c = _changed;
+      _changed = false;
+      return c;
+    }
+
     void display(Adafruit_SSD1306 display) {
       if (mode == MODE_ON) {
         _display_on(display);
@@ -46,26 +59,24 @@ class State {
       } else {
         _display_error(display);
       }
-
-      changed = false;
     }
 
     void toggle_on_off() {
       if (mode == MODE_ON) {
         _last_on_level = _led_level;
-        _led_level = 0;
+        set_led_level(0);
         mode = MODE_OFF;
       } else if (mode == MODE_OFF) {
-        _led_level = _last_on_level;
+        set_led_level(_last_on_level);
         mode = MODE_ON;
       }
-
-      changed = true;
     }
 
   private:
     volatile int _led_level = 0;
     int _last_on_level = 0;
+    bool _changed = false;
+    int _led_pin;
 
     void _display_on(Adafruit_SSD1306 display) {
       float pct = (float) _led_level / LED_LEVEL_MAX;
