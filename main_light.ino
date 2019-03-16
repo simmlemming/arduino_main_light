@@ -28,11 +28,14 @@ void setup() {
   pinMode(LED, OUTPUT);
   pinMode(PHOTO_RES, INPUT_PULLUP);
 
+  analogWriteFreq(1000);
   attachInterrupt(digitalPinToInterrupt(ENCODER_A), turn, RISING);
 
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   display.clearDisplay();
   display.setTextColor(WHITE);
+
+  state.set_led_level(LED_LEVEL_MAX);
 
   allow_interrupts = true;
 }
@@ -40,12 +43,14 @@ void setup() {
 void loop() {
   btn_power.loop();
 
-  display.clearDisplay();
-  state.display(display);
-  display.display();
+  if (state.changed) {
+    display.clearDisplay();
+    state.display(display);
+    display.display();
 
-  int pwm = map(state.led_level, LED_LEVEL_MIN, LED_LEVEL_MAX, 0, 1023);
-  update_led(pwm);
+    int pwm = map(state.get_led_level(), LED_LEVEL_MIN, LED_LEVEL_MAX, 0, 1023);
+    update_led(pwm);
+  }
 
   allow_interrupts = true;
 }
