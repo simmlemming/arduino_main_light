@@ -1,52 +1,48 @@
-#include <SPI.h>
-#include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
 #include <Button.h>
-#include "State.cpp"
+#include <Homenet.h>
+#include "Light.cpp"
 #include "Const.h"
+#include "LightDisplay.cpp"
 
 #define ENCODER_A D6
 #define ENCODER_B D7
 #define BTN_POWER D4 // 10
 #define LED D5 // 3
-#define PHOTO_RES A0
 
-#define OLED_RESET LED_BUILTIN
-Adafruit_SSD1306 display(OLED_RESET);
+Homenet net = Homenet();
+LightDisplay display = LightDisplay();
+Light light = Light(LED);
 
-State state = State(LED);
 Button btn_power = Button(BTN_POWER, on_power_click);
 
 volatile bool allow_interrupts = true;
 
 void setup() {
   Serial.begin(115200);
+  display.setup();
+  net.setup(on_cmd);
 
   pinMode(ENCODER_A, INPUT_PULLUP);
   pinMode(ENCODER_B, INPUT_PULLUP);
   pinMode(LED, OUTPUT);
-  pinMode(PHOTO_RES, INPUT_PULLUP);
 
   analogWriteFreq(1000);
   attachInterrupt(digitalPinToInterrupt(ENCODER_A), turn, RISING);
 
-  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
-  display.clearDisplay();
-  display.setTextColor(WHITE);
-
-  state.set_led_level(LED_LEVEL_MAX / 3);
+  light.set_state(STATE_OK);
+  light.set_value(1);
 
   allow_interrupts = true;
 }
 
 void loop() {
+  net.loop();
   btn_power.loop();
-
-  if (state.popChanged()) {
-    display.clearDisplay();
-    state.display(display);
-    display.display();
+  
+  if (light.loop()) {
+    net.send(light);
+    display.display(light);
+//    Serial.println(light.get_value());
   }
 
   allow_interrupts = true;
@@ -63,24 +59,16 @@ void turn() {
   int b = digitalRead(ENCODER_B);
 
   if (a == b) {
-    state.down();
+    light.down();
   } else {
-    state.up();
+    light.up();
   }
 }
 
-void update_led(int value) {
-  analogWrite(LED, value);
-}
+void on_cmd(Cmd cmd) {
 
-void on_up_click() {
-  state.up();
-}
-
-void on_down_click() {
-  state.down();
 }
 
 void on_power_click() {
-  state.toggle_on_off();
+  light.toggle_on_off();
 }
