@@ -11,7 +11,11 @@ class Throttle {
         _last_input_ms = millis();
       }
 
-      bool output = millis() -_last_input_ms > _ms;
+      bool output = _last_input_ms != 0 && millis() -_last_input_ms > _ms;
+      if (output) {
+        _last_input_ms = 0;
+      }
+      
       return output;
     }
     
