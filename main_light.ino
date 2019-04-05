@@ -3,6 +3,7 @@
 #include "Light.cpp"
 #include "Const.h"
 #include "LightDisplay.cpp"
+#include "Throttle.cpp"
 
 #define ENCODER_A D6
 #define ENCODER_B D7
@@ -12,6 +13,7 @@
 Homenet net = Homenet();
 LightDisplay display = LightDisplay();
 Light light = Light(LED);
+Throttle throttle = Throttle(300);
 
 Button btn_power = Button(BTN_POWER, on_power_click);
 
@@ -38,8 +40,11 @@ void setup() {
 void loop() {
   net.loop();
   btn_power.loop();
+
+  bool state_changed = light.loop();
+  bool state_settled = throttle.throttled(state_changed);
   
-  if (light.loop()) {
+  if (state_settled) {
     net.send(light);
     display.display(light);
 //    Serial.println(light.get_value());

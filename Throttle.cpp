@@ -1,0 +1,21 @@
+#include <ESP8266WiFi.h>
+
+class Throttle {
+  public:
+    Throttle(long ms) {
+      _ms = ms;
+    }
+
+    bool throttled(bool input) {
+      if (input) {
+        _last_input_ms = millis();
+      }
+
+      bool output = millis() -_last_input_ms > _ms;
+      return output;
+    }
+    
+  private:
+    long _ms;
+    long _last_input_ms;
+};
