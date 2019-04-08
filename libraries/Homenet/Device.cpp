@@ -20,6 +20,14 @@ char* Device::get_name() {
     return _name;
 }
 
+char* Device::get_room() {
+    return _room;
+}
+
+char* Device::get_type() {
+    return _type;
+}
+
 long Device::get_wifi_strength() { return _wifi_strength; }
 
 void Device::set_state(int state) {
@@ -37,8 +45,6 @@ void Device::set_value(int value) {
 }
 
 void Device::set_wifi_strength(long strength) {
-    if (_wifi_strength != strength) {
-        _wifi_strength = strength;
-        _changed = true;
-    }
+    _changed = _changed || abs(_wifi_strength - strength) > 3;
+    _wifi_strength = strength;
 }

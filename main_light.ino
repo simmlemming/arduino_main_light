@@ -37,11 +37,13 @@ void setup() {
   allow_interrupts = true;
 }
 
+
 void loop() {
   net.loop();
   btn_power.loop();
 
   light.set_wifi_state(net.get_state());
+  light.set_wifi_strength(net.get_wifi_strength());
 
   bool state_changed = light.loop();
   bool state_settled = throttle.throttled(state_changed);

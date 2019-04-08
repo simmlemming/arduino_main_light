@@ -1,7 +1,7 @@
-#include <ArduinoJson.h>
-
 #ifndef STATE
 #define STATE "state"
+
+#include <ArduinoJson.h>
 
 #define STATE_OFF 0
 #define STATE_OK 1
@@ -13,9 +13,9 @@
 
 class Device {
    private:
-    char* _name;
-    char const *_room;
-    char const *_type;
+    char *_name;
+    char *_room;
+    char *_type;
     long _wifi_strength;
     int _state;
     volatile int _value;
@@ -36,7 +36,9 @@ class Device {
     long get_wifi_strength();
     int get_state();
     int get_value();
-    char* get_name();
+    char *get_name();
+    char *get_room();
+    char *get_type();
 };
 
 #endif

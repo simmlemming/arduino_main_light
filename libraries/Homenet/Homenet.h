@@ -20,6 +20,7 @@ class Homenet {
 
     void send(Device s);
     int get_state();
+    long get_wifi_strength();
 
    private:
     WiFiClient _wifi;
