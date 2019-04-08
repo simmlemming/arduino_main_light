@@ -13,13 +13,14 @@
 
 class Device {
    private:
-    char const *_name;
+    char* _name;
     char const *_room;
     char const *_type;
     long _wifi_strength;
     int _state;
     volatile int _value;
 
+   protected:
     bool _changed;
 
    public:
@@ -35,6 +36,7 @@ class Device {
     long get_wifi_strength();
     int get_state();
     int get_value();
+    char* get_name();
 };
 
 #endif

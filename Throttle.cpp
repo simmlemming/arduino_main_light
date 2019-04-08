@@ -15,7 +15,7 @@ class Throttle {
       if (output) {
         _last_input_ms = 0;
       }
-      
+
       return output;
     }
     

@@ -32,7 +32,7 @@ class Light : public Device {
     void set_value(int value) {
       int _value = constrain(value, LED_LEVEL_MIN, LED_LEVEL_MAX);
       Device::set_value(_value); // calling super method
-      
+
       int pwm = map(_value, LED_LEVEL_MIN, LED_LEVEL_MAX, 0, 1023);
       analogWrite(_led_pin, pwm);
     }
@@ -48,7 +48,19 @@ class Light : public Device {
       }
     }
 
+    void set_wifi_state(int state) {
+      if (_wifi_state != state) {
+        _wifi_state = state;
+        _changed = true;
+      }
+    }
+
+    int get_wifi_state() {
+      return _wifi_state;
+    }
+
   private:
     int _last_on_level = 0;
     int _led_pin;
+    int _wifi_state;
 };

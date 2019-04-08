@@ -10,9 +10,9 @@
 #define BTN_POWER D4 // 10
 #define LED D5 // 3
 
-Homenet net = Homenet();
-LightDisplay display = LightDisplay();
 Light light = Light(LED);
+Homenet net = Homenet(light.get_name());
+LightDisplay display = LightDisplay();
 Throttle throttle = Throttle(300);
 
 Button btn_power = Button(BTN_POWER, on_power_click);
@@ -32,7 +32,7 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(ENCODER_A), turn, RISING);
 
   light.set_state(STATE_OK);
-  light.set_value(1);
+  light.set_value(10);
 
   allow_interrupts = true;
 }
@@ -41,13 +41,14 @@ void loop() {
   net.loop();
   btn_power.loop();
 
+  light.set_wifi_state(net.get_state());
+
   bool state_changed = light.loop();
   bool state_settled = throttle.throttled(state_changed);
   
   if (state_settled) {
     net.send(light);
-    display.display(light);
-//    Serial.println(light.get_value());
+    display.display(light, light.get_wifi_state());
   }
 
   allow_interrupts = true;

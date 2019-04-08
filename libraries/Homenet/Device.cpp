@@ -16,19 +16,29 @@ int Device::get_state() { return _state; }
 
 int Device::get_value() { return _value; }
 
+char* Device::get_name() {
+    return _name;
+}
+
 long Device::get_wifi_strength() { return _wifi_strength; }
 
 void Device::set_state(int state) {
-    _state = state;
-    _changed = true;
+    if (_state != state) {
+        _state = state;
+        _changed = true;
+    }
 }
 
 void Device::set_value(int value) {
-    _value = value;
-    _changed = true;
+    if (_value != value) {
+        _value = value;
+        _changed = true;
+    }
 }
 
 void Device::set_wifi_strength(long strength) {
-    _wifi_strength = strength;
-    _changed = true;
+    if (_wifi_strength != strength) {
+        _wifi_strength = strength;
+        _changed = true;
+    }
 }
