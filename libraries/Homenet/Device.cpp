@@ -48,3 +48,19 @@ void Device::set_wifi_strength(long strength) {
     _changed = _changed || abs(_wifi_strength - strength) > 3;
     _wifi_strength = strength;
 }
+
+char* Device::to_json() {
+    DynamicJsonBuffer jsonBuffer;
+    char jsonMessageBuffer[256];
+
+    JsonObject& root = jsonBuffer.createObject();
+    root["name"] = get_name();
+    root["room"] = get_room();
+    root["type"] = get_type();
+    root["signal"] = get_wifi_strength();
+    root["value"] = get_value();
+    root["state"] = get_state();
+
+    root.printTo(jsonMessageBuffer, sizeof(jsonMessageBuffer));
+    return jsonMessageBuffer;
+}

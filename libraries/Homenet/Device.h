@@ -13,9 +13,9 @@
 
 class Device {
    private:
-    char *_name;
-    char *_room;
-    char *_type;
+    char* _name;
+    char* _room;
+    char* _type;
     long _wifi_strength;
     int _state;
     volatile int _value;
@@ -24,10 +24,10 @@ class Device {
     bool _changed;
 
    public:
-    Device(char *name, char *room, char *type);
+    Device(char* name, char* room, char* type);
     bool loop();
 
-    JsonObject to_json();
+    char* to_json();
 
     void set_wifi_strength(long strength);
     void set_state(int state);
@@ -36,9 +36,9 @@ class Device {
     long get_wifi_strength();
     int get_state();
     int get_value();
-    char *get_name();
-    char *get_room();
-    char *get_type();
+    char* get_name();
+    char* get_room();
+    char* get_type();
 };
 
 #endif

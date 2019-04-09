@@ -25,24 +25,12 @@ void Homenet::loop() {
 }
 
 void Homenet::send(Device device) {
-    DynamicJsonBuffer jsonBuffer;
-    char jsonMessageBuffer[256];
-
-    JsonObject& root = jsonBuffer.createObject();
-    root["name"] = device.get_name();
-    root["room"] = device.get_room();
-    root["type"] = device.get_type();
-    root["signal"] = device.get_wifi_strength();
-    root["value"] = device.get_value();
-
-    root["state"] = device.get_state();
-
-    root.printTo(jsonMessageBuffer, sizeof(jsonMessageBuffer));
-    _mqtt.publish(outTopic, jsonMessageBuffer);
+    char* json = device.to_json();
+    _mqtt.publish(outTopic, json);
 
 #if DEBUG
     Serial.print("--> ");
-    Serial.println(jsonMessageBuffer);
+    Serial.println(json);
 #endif
 }
 
