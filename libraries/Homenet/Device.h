@@ -3,13 +3,13 @@
 
 #include <ArduinoJson.h>
 
-#define STATE_OFF 0
-#define STATE_OK 1
-#define STATE_INIT 2
-#define STATE_ERROR 3
-#define STATE_ALARM 4
-#define STATE_ALARM_PENDING 5
-#define STATE_PAUSED 6
+#define DEVICE_STATE_OFF 0
+#define DEVICE_STATE_OK 1
+#define DEVICE_STATE_INIT 2
+#define DEVICE_STATE_ERROR 3
+#define DEVICE_STATE_ALARM 4
+#define DEVICE_STATE_ALARM_PENDING 5
+#define DEVICE_STATE_PAUSED 6
 
 class Device {
    private:

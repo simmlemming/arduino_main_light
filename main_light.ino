@@ -31,7 +31,7 @@ void setup() {
   analogWriteFreq(1000);
   attachInterrupt(digitalPinToInterrupt(ENCODER_A), turn, RISING);
 
-  light.set_state(STATE_OK);
+  light.set_state(DEVICE_STATE_OK);
   light.set_value(10);
 
   allow_interrupts = true;
@@ -47,7 +47,7 @@ void loop() {
 
   bool state_changed = light.loop();
   bool state_settled = throttle.throttled(state_changed);
-  
+
   if (state_settled) {
     net.send(light);
     display.display(light, light.get_wifi_state());
@@ -74,9 +74,31 @@ void turn() {
 }
 
 void on_cmd(Cmd cmd) {
+  if (eq(cmd.cmd, CMD_STATE)) {
+    light.set_state(light.get_state()); // just to set _changed flag to true
+    return;
+  }
 
+  if (eq(cmd.cmd, CMD_VALUE)) {
+    light.set_value(cmd.value);
+    return;
+  }
+
+  if (eq(cmd.cmd, CMD_OFF)) {
+    light.off();
+    return;
+  }
+
+  if (eq(cmd.cmd, CMD_ON)) {
+    light.on();
+    return;
+  }
 }
 
 void on_power_click() {
   light.toggle_on_off();
+}
+
+boolean eq(const char* a1, const char* a2) {
+  return strcmp(a1, a2) == 0;
 }

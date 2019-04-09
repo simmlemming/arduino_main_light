@@ -3,7 +3,6 @@
 
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
-// #include <ArduinoJson.h>
 #include "Cmd.h"
 #include "Device.h"
 
@@ -23,6 +22,9 @@ class Homenet {
     long get_wifi_strength();
 
    private:
+    static Homenet* instance;
+    static void _on_new_message_handler(char* topic, uint8_t* payload, unsigned int length);
+    
     WiFiClient _wifi;
     PubSubClient _mqtt;
     char* _mqtt_device_name;
@@ -33,6 +35,7 @@ class Homenet {
     void _setup_mqtt();
 
     void _on_new_message(char* topic, uint8_t* payload, unsigned int length);
+    void (*_on_cmd)(Cmd cmd);
 };
 
 #endif

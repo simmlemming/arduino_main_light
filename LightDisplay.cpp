@@ -19,9 +19,9 @@ class LightDisplay {
     void display(Device device, int wifi_state) {
       dd.clearDisplay();
 
-      if (device.get_state() == STATE_OK) {
+      if (device.get_state() == DEVICE_STATE_OK) {
         _display_on(device);
-      } else if (device.get_state() == STATE_OFF) {
+      } else if (device.get_state() == DEVICE_STATE_OFF) {
         _display_off();
       } else {
         _display_error(device);

@@ -10,13 +10,13 @@ class Light : public Device {
     }
 
     void up() {
-      if (get_state() == STATE_OK) {
+      if (get_state() == DEVICE_STATE_OK) {
         value_up();
       }
     }
 
     void down() {
-      if (get_state() == STATE_OK) {
+      if (get_state() == DEVICE_STATE_OK) {
         value_down();
       }
     }
@@ -38,14 +38,27 @@ class Light : public Device {
     }
 
     void toggle_on_off() {
-      if (get_state() == STATE_OK) {
-        _last_on_level = get_value();
-        set_value(0);
-        set_state(STATE_OFF);
-      } else if (get_state() == STATE_OFF) {
-        set_value(_last_on_level);
-        set_state(STATE_OK);
+      if (get_state() == DEVICE_STATE_OK) {
+        off();
+      } else if (get_state() == DEVICE_STATE_OFF) {
+        on();
       }
+    }
+
+    void on() {
+      set_value(_last_on_level);
+      set_state(DEVICE_STATE_OK);
+    }
+
+
+    void off() {
+      if (get_state() == DEVICE_STATE_OK) {
+        _last_on_level = get_value();
+      }
+
+      set_value(0);
+      set_state(DEVICE_STATE_OFF);
+
     }
 
     void set_wifi_state(int state) {

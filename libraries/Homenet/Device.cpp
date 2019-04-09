@@ -31,17 +31,13 @@ char* Device::get_type() {
 long Device::get_wifi_strength() { return _wifi_strength; }
 
 void Device::set_state(int state) {
-    if (_state != state) {
-        _state = state;
-        _changed = true;
-    }
+    _state = state;
+    _changed = true;
 }
 
 void Device::set_value(int value) {
-    if (_value != value) {
-        _value = value;
-        _changed = true;
-    }
+    _value = value;
+    _changed = true;
 }
 
 void Device::set_wifi_strength(long strength) {
@@ -51,7 +47,7 @@ void Device::set_wifi_strength(long strength) {
 
 char* Device::to_json() {
     DynamicJsonBuffer jsonBuffer;
-    char jsonMessageBuffer[256];
+    char jsonMessageBuffer[1024];
 
     JsonObject& root = jsonBuffer.createObject();
     root["name"] = get_name();
