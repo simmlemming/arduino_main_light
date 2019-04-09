@@ -31,6 +31,7 @@ class Light : public Device {
 
     void set_value(int value) {
       int _value = constrain(value, LED_LEVEL_MIN, LED_LEVEL_MAX);
+      Device::set_state(DEVICE_STATE_OK);
       Device::set_value(_value); // calling super method
 
       int pwm = map(_value, LED_LEVEL_MIN, LED_LEVEL_MAX, 0, 1023);
