@@ -9,8 +9,9 @@
 #define ENCODER_B D7
 #define BTN_POWER D4 // 10
 #define LED D5 // 3
+#define LED_POWER D3
 
-Light light = Light(LED);
+Light light = Light(LED, LED_POWER);
 Homenet net = Homenet(light.get_name());
 LightDisplay display = LightDisplay();
 Throttle throttle = Throttle(300);
@@ -27,12 +28,14 @@ void setup() {
   pinMode(ENCODER_A, INPUT_PULLUP);
   pinMode(ENCODER_B, INPUT_PULLUP);
   pinMode(LED, OUTPUT);
-
+  pinMode(LED_POWER, OUTPUT);
+  
   analogWriteFreq(1000);
   attachInterrupt(digitalPinToInterrupt(ENCODER_A), turn, RISING);
 
-  light.set_state(DEVICE_STATE_OK);
-  light.set_value(10);
+  digitalWrite(LED_POWER, LOW);
+  light.set_value(0);
+  light.set_state(DEVICE_STATE_OFF);
 
   allow_interrupts = true;
 }

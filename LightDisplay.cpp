@@ -66,11 +66,11 @@ class LightDisplay {
     }
 
     void _display_off() {
-      _draw_bar(0);
-
-      dd.setCursor(48, 22);
-      dd.setTextSize(6);
-      dd.print("-");
+//      _draw_bar(0);
+//
+//      dd.setCursor(48, 22);
+//      dd.setTextSize(6);
+//      dd.print("-");
     }
 
     void _display_error(Device device) {
