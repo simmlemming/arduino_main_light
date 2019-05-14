@@ -42,7 +42,7 @@ class Light : public Device {
       }
 
       int pwm = map(_value, LED_LEVEL_MIN, LED_LEVEL_MAX, 0, 1023);
-      pwm = 1023 - pwm; // invert for two-transistors-scheme
+      // pwm = 1023 - pwm; // invert for two-transistors-scheme
       analogWrite(_led_pin, pwm);
     }
 

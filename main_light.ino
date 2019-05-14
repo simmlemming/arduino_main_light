@@ -2,7 +2,7 @@
 #include <Homenet.h>
 #include "Light.cpp"
 #include "Const.h"
-#include "LightDisplay.cpp"
+#include "LightDisplayRing.cpp"
 #include "Throttle.cpp"
 
 #define ENCODER_A D6
@@ -13,7 +13,8 @@
 
 Light light = Light(LED, LED_POWER);
 Homenet net = Homenet(light.get_name());
-LightDisplay display = LightDisplay();
+//LightDisplay display = LightDisplay();
+LightDisplayRing ring = LightDisplayRing();
 Throttle throttle = Throttle(300);
 
 Button btn_power = Button(BTN_POWER, on_power_click);
@@ -22,7 +23,8 @@ volatile bool allow_interrupts = true;
 
 void setup() {
   Serial.begin(115200);
-  display.setup();
+//  display.setup();
+  ring.setup();
   net.setup(on_cmd);
 
   pinMode(ENCODER_A, INPUT_PULLUP);
@@ -51,9 +53,13 @@ void loop() {
   bool state_changed = light.loop();
   bool state_settled = throttle.throttled(state_changed);
 
+  if (state_changed) {
+    ring.display(light, light.get_wifi_state());
+  }
+  
   if (state_settled) {
     net.send(light);
-    display.display(light, light.get_wifi_state());
+//    display.display(light, light.get_wifi_state());
   }
 
   allow_interrupts = true;
