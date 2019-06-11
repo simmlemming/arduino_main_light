@@ -27,8 +27,8 @@ void setup() {
   ring.setup();
   net.setup(on_cmd);
 
-  pinMode(ENCODER_A, INPUT_PULLUP);
-  pinMode(ENCODER_B, INPUT_PULLUP);
+  pinMode(ENCODER_A, INPUT);
+  pinMode(ENCODER_B, INPUT);
   pinMode(LED, OUTPUT);
   pinMode(LED_POWER, OUTPUT);
   
