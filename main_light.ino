@@ -7,13 +7,12 @@
 
 #define ENCODER_A D6
 #define ENCODER_B D7
-#define BTN_POWER D4 // 10
-#define LED D5 // 3
+#define BTN_POWER D4
+#define LED D5
 #define LED_POWER D3
 
-Light light = Light(LED, LED_POWER);
+Light light = Light();
 Homenet net = Homenet(light.get_name());
-//LightDisplay display = LightDisplay();
 LightDisplayRing ring = LightDisplayRing();
 Throttle throttle = Throttle(300);
 
@@ -23,7 +22,6 @@ volatile bool allow_interrupts = true;
 
 void setup() {
   Serial.begin(115200);
-//  display.setup();
   ring.setup();
   net.setup(on_cmd);
 
@@ -31,7 +29,7 @@ void setup() {
   pinMode(ENCODER_B, INPUT);
   pinMode(LED, OUTPUT);
   pinMode(LED_POWER, OUTPUT);
-  
+
   analogWriteFreq(1000);
   attachInterrupt(digitalPinToInterrupt(ENCODER_A), turn, RISING);
 
@@ -54,15 +52,29 @@ void loop() {
   bool state_settled = throttle.throttled(state_changed);
 
   if (state_changed) {
-    ring.display(light, light.get_wifi_state());
+    apply_state();
   }
-  
+
   if (state_settled) {
     net.send(light);
-//    display.display(light, light.get_wifi_state());
   }
 
   allow_interrupts = true;
+}
+
+void apply_state() {
+  ring.display(light, light.get_wifi_state());
+
+  int pwm = map(light.get_value(), LED_LEVEL_MIN, LED_LEVEL_MAX, 0, 1023);
+  pwm = (light.get_state() == DEVICE_STATE_OFF) ? 0 : pwm;
+
+  analogWrite(LED, pwm);
+
+  if (light.get_state() == DEVICE_STATE_OK) {
+    digitalWrite(LED_POWER, HIGH);
+  } else if (light.get_state() == DEVICE_STATE_OFF) {
+    digitalWrite(LED_POWER, LOW);
+  }
 }
 
 void turn() {
