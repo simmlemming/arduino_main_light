@@ -18,7 +18,7 @@ Throttle throttle = Throttle(300);
 
 Button btn_power = Button(BTN_POWER, on_power_click);
 
-volatile bool allow_interrupts = true;
+//volatile bool allow_interrupts = true;
 
 void setup() {
   Serial.begin(115200);
@@ -37,7 +37,7 @@ void setup() {
   light.set_value(0);
   light.set_state(DEVICE_STATE_OFF);
 
-  allow_interrupts = true;
+//  allow_interrupts = true;
 }
 
 
@@ -59,7 +59,7 @@ void loop() {
     net.send(light);
   }
 
-  allow_interrupts = true;
+//  allow_interrupts = true;
 }
 
 void apply_state() {
@@ -78,11 +78,11 @@ void apply_state() {
 }
 
 void turn() {
-  if (!allow_interrupts) {
-    return;
-  }
+//  if (!allow_interrupts) {
+//    return;
+//  }
 
-  allow_interrupts = false;
+//  allow_interrupts = false;
 
   int a = digitalRead(ENCODER_A);
   int b = digitalRead(ENCODER_B);
