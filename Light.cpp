@@ -41,7 +41,8 @@ class Light : public Device {
     }
 
     void on() {
-      set_state(DEVICE_STATE_OK);
+      set_value(get_value());
+//      set_state(DEVICE_STATE_OK);
     }
 
     void off() {
