@@ -7,14 +7,14 @@
 
 #define LED_TYPE WS2812B
 #define COLOR_ORDER GRB
-#define NUM_LEDS 12
+#define NUM_LEDS 29
 #define LED_PIN D8
 
 class LightDisplayRing {
   public:
     void setup() {
       FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(_leds, NUM_LEDS).setCorrection(TypicalLEDStrip).setDither(0);
-      FastLED.setBrightness(20);
+      FastLED.setBrightness(40);
     }
 
     void display(Device device, int wifi_state) {
@@ -27,11 +27,24 @@ class LightDisplayRing {
       }
 
       _display_wifi_state(wifi_state);
+      
+      _invert_orientation(); // Physically last LED in the led strip is first
       FastLED.show();
     }
 
   private:
     CRGB _leds[NUM_LEDS];
+
+    void _invert_orientation() {
+      CRGB tmp;
+      int j = 0;
+      for (int i = 0; i < NUM_LEDS / 2; i++) {
+        j = NUM_LEDS - 1 - i;
+        tmp = _leds[i];
+        _leds[i] = _leds[j];
+        _leds[j] = tmp;
+      }
+    }
 
     void _display_on(Device device) {
       float pct = (float) device.get_value() / LED_LEVEL_MAX;
