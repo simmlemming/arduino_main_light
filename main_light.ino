@@ -2,7 +2,7 @@
 #include <Homenet.h>
 #include "Light.cpp"
 #include "Const.h"
-#include "LightDisplayRing.cpp"
+#include "LedStrip.cpp"
 #include "Throttle.cpp"
 
 #define ENCODER_A D6
@@ -13,7 +13,7 @@
 
 Light light = Light();
 Homenet net = Homenet(light.get_name());
-LightDisplayRing ring = LightDisplayRing();
+LedStrip led_strip = LedStrip();
 Throttle throttle = Throttle(300);
 
 Button btn_power = Button(BTN_POWER, on_power_click);
@@ -22,7 +22,7 @@ Button btn_power = Button(BTN_POWER, on_power_click);
 
 void setup() {
   Serial.begin(115200);
-  ring.setup();
+  led_strip.setup();
   net.setup(on_cmd);
 
   pinMode(ENCODER_A, INPUT);
@@ -63,7 +63,7 @@ void loop() {
 }
 
 void apply_state() {
-  ring.display(light, light.get_wifi_state());
+  led_strip.display(light, light.get_wifi_state());
 
   int pwm = map(light.get_value(), LED_LEVEL_MIN, LED_LEVEL_MAX, 0, 1023);
   pwm = (light.get_state() == DEVICE_STATE_OFF) ? 0 : pwm;
