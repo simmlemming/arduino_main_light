@@ -1,3 +1,9 @@
+/*
+ * ESP board definition v2.4.2
+ * Board: NodeMCU 1.0 (ESP-12E Module)
+ * CPU freq: 80MHz
+ */
+
 #include <Button.h>
 #include <Homenet.h>
 #include "Light.cpp"
@@ -15,6 +21,10 @@ Light light = Light();
 Homenet net = Homenet(light.get_name());
 LedStrip led_strip = LedStrip();
 Throttle throttle = Throttle(300);
+
+void on_power_click() {
+  light.toggle_on_off();
+}
 
 Button btn_power = Button(BTN_POWER, on_power_click);
 
@@ -65,7 +75,9 @@ void loop() {
 void apply_state() {
   led_strip.display(light, light.get_wifi_state());
 
-  int pwm = map(light.get_value(), LED_LEVEL_MIN, LED_LEVEL_MAX, 0, 1023);
+  // 78% corresponds to max current for diodes,
+  // so mapping to range 0..797 instead of 0..1023
+  int pwm = map(light.get_value(), LED_LEVEL_MIN, LED_LEVEL_MAX, 0, 797);
   pwm = (light.get_state() == DEVICE_STATE_OFF) ? 0 : pwm;
 
   analogWrite(LED, pwm);
@@ -77,6 +89,8 @@ void apply_state() {
   }
 }
 
+// Declare like this if working with ESP board definitions ver > 2.4.2
+// ICACHE_RAM_ATTR void turn() {
 void turn() {
 //  if (!allow_interrupts) {
 //    return;
@@ -114,10 +128,6 @@ void on_cmd(Cmd cmd) {
     light.on();
     return;
   }
-}
-
-void on_power_click() {
-  light.toggle_on_off();
 }
 
 boolean eq(const char* a1, const char* a2) {
