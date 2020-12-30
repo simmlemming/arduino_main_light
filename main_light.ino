@@ -1,8 +1,8 @@
 /*
- * ESP board definition v2.4.2
- * Board: NodeMCU 1.0 (ESP-12E Module)
- * CPU freq: 80MHz
- */
+   ESP board definition v2.4.2
+   Board: NodeMCU 1.0 (ESP-12E Module)
+   CPU freq: 80MHz
+*/
 
 #include <Button.h>
 #include <Homenet.h>
@@ -22,8 +22,14 @@ Homenet net = Homenet(light.get_name());
 LedStrip led_strip = LedStrip();
 Throttle throttle = Throttle(300);
 
+long last_off_ms = 0;
+
 void on_power_click() {
   light.toggle_on_off();
+
+  if (light.get_state() == DEVICE_STATE_OFF) {
+    last_off_ms = millis();
+  }
 }
 
 Button btn_power = Button(BTN_POWER, on_power_click);
@@ -47,7 +53,7 @@ void setup() {
   light.set_value(0);
   light.set_state(DEVICE_STATE_OFF);
 
-//  allow_interrupts = true;
+  //  allow_interrupts = true;
 }
 
 
@@ -69,7 +75,7 @@ void loop() {
     net.send(light);
   }
 
-//  allow_interrupts = true;
+  //  allow_interrupts = true;
 }
 
 void apply_state() {
@@ -92,11 +98,16 @@ void apply_state() {
 // Declare like this if working with ESP board definitions ver > 2.4.2
 // ICACHE_RAM_ATTR void turn() {
 void turn() {
-//  if (!allow_interrupts) {
-//    return;
-//  }
+  //  if (!allow_interrupts) {
+  //    return;
+  //  }
 
-//  allow_interrupts = false;
+  //  allow_interrupts = false;
+
+  // To prevent turning on by rotating the encoder while pressing it to turn off
+  if (millis() - last_off_ms < 1000) {
+    return;
+  }
 
   int a = digitalRead(ENCODER_A);
   int b = digitalRead(ENCODER_B);
