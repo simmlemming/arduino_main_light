@@ -34,12 +34,10 @@ void on_power_click() {
 
 Button btn_power = Button(BTN_POWER, on_power_click);
 
-//volatile bool allow_interrupts = true;
-
 void setup() {
   Serial.begin(115200);
   led_strip.setup();
-  net.setup(on_cmd);
+//  net.setup(on_cmd);
 
   pinMode(ENCODER_A, INPUT);
   pinMode(ENCODER_B, INPUT);
@@ -52,17 +50,16 @@ void setup() {
   digitalWrite(LED_POWER, LOW);
   light.set_value(0);
   light.set_state(DEVICE_STATE_OFF);
-
-  //  allow_interrupts = true;
 }
 
 
 void loop() {
-  net.loop();
+//  net.loop();
   btn_power.loop();
 
-  light.set_wifi_state(net.get_state());
-  light.set_wifi_strength(net.get_wifi_strength());
+  light.set_wifi_state(2); // STATE_CONNECTED from Homenet
+//  light.set_wifi_state(net.get_state());
+//  light.set_wifi_strength(net.get_wifi_strength());
 
   bool state_changed = light.loop();
   bool state_settled = throttle.throttled(state_changed);
@@ -71,19 +68,18 @@ void loop() {
     apply_state();
   }
 
-  if (state_settled) {
-    net.send(light);
-  }
+//  if (state_settled) {
+//    net.send(light);
+//  }
 
-  //  allow_interrupts = true;
 }
 
 void apply_state() {
   led_strip.display(light, light.get_wifi_state());
 
-  // 78% corresponds to max current for diodes,
-  // so mapping to range 0..797 instead of 0..1023
-  int pwm = map(light.get_value(), LED_LEVEL_MIN, LED_LEVEL_MAX, 0, 797);
+  // 70% corresponds to max current for diodes,
+  // so mapping to range 0..716 instead of 0..1023
+  int pwm = map(light.get_value(), LED_LEVEL_MIN, LED_LEVEL_MAX, 0, 716);
   pwm = (light.get_state() == DEVICE_STATE_OFF) ? 0 : pwm;
 
   analogWrite(LED, pwm);
@@ -98,12 +94,6 @@ void apply_state() {
 // Declare like this if working with ESP board definitions ver > 2.4.2
 // ICACHE_RAM_ATTR void turn() {
 void turn() {
-  //  if (!allow_interrupts) {
-  //    return;
-  //  }
-
-  //  allow_interrupts = false;
-
   // To prevent turning on by rotating the encoder while pressing it to turn off
   if (millis() - last_off_ms < 1000) {
     return;
